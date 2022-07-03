@@ -14,33 +14,138 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
-
 enum lzf_key {          // Make sure have the awesome keycode ready
-    DE = SAFE_RANGE,
+    // {}  CURLY_BRACE
+    LZF_CB= SAFE_RANGE ,
+    // ()  PAREN
+    LZF_PRN ,
+    // <>  ANGLE_BRACKET
+    LZF_ABK ,
+    // :;  QUOTE
+    LZF_QUOTE ,
+    // [] BRACKET
+    LZF_RC ,
+
 };
 uint8_t mod_state;
 
-bool l_m(keyrecord_t *record, uint16_t a, uint16_t b) {
-    mod_state = get_mods();
-    if (record->event.pressed) { // 按下时做些什么
-        if (mod_state & MOD_MASK_SHIFT) {
-            tap_code(b);
-        } else {
-            tap_code(a);
-        }
-    }
-    return false;
-}
+//bool l_m(keyrecord_t *record, uint16_t a, uint16_t b) {
+//    mod_state = get_mods();
+//    if (record->event.pressed) { // 按下时做些什么
+//        if (mod_state & MOD_MASK_SHIFT) {
+//            tap_code(b);
+//        } else {
+//            tap_code(a);
+//        }
+//    }
+//    return false;
+//}
+//
+//
+//bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+//    switch (keycode) {
+//        case DE:
+//            return l_m(record, KC_BACKSPACE, KC_ENTER); // 跳过此键的所有进一步处理
+//        default:
+//            return true; // 正常响应其他键码
+//    }
+//}
 
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    switch (keycode) {
-        case DE:
-            return l_m(record, KC_BACKSPACE, KC_ENTER); // 跳过此键的所有进一步处理
+bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
+    switch(keycode) {
+        case LZF_CB:
+        case LZF_PRN:
+        case LZF_ABK:
+        case LZF_QUOTE:
+        case LZF_RC:
+            return true;
         default:
-            return true; // 正常响应其他键码
+            return false;
     }
 }
+
+void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+    switch(keycode) {
+        // {}  CURLY_BRACE
+        case LZF_CB:
+            if (!shifted) {
+                SEND_STRING("{");
+            } else {
+                SEND_STRING("}");
+            }
+            break;
+        // ()  PAREN
+        case LZF_PRN:
+            if (!shifted) {
+                SEND_STRING("(");
+            } else {
+                SEND_STRING(")");
+            }
+            break;
+        // <>  ANGLE_BRACKET
+        case LZF_ABK:
+            if (!shifted) {
+                SEND_STRING("<");
+            } else {
+                SEND_STRING(">");
+            }
+            break;
+        // :;  QUOTE
+        case LZF_QUOTE:
+            if (!shifted) {
+                SEND_STRING(":");
+            } else {
+                SEND_STRING(";");
+            }
+            break;
+        // [] BRACKET
+        case LZF_RC:
+            if (!shifted) {
+                SEND_STRING("[");
+            } else {
+                SEND_STRING("]");
+            }
+            break;
+        default:
+            if (shifted) {
+                add_weak_mods(MOD_BIT(KC_LSFT));
+            }
+            // & 0xFF gets the Tap key for Tap Holds, required when using Retro Shift
+            register_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+    }
+}
+
+void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+    switch(keycode) {
+        // {}  CURLY_BRACE
+//        case LZF_CB:
+//            register_code16((!shifted) ? KC_LCBR : KC_RCBR);
+//            break;
+        // ()  PAREN
+//        case LZF_PRN:
+//            register_code16((!shifted) ? KC_LPRN : KC_RPRN);
+//            break;
+        // <>  ANGLE_BRACKET
+//        case LZF_ABK:
+//            register_code16((!shifted) ? KC_LT : KC_GT);
+//            break;
+        // :;  QUOTE
+//        case LZF_QUOTE:
+//            register_code16((!shifted) ? KC_COLN : KC_SEMICOLON);
+//            break;
+        // [] BRACKET
+//        case LZF_RC:
+//            register_code16((!shifted) ? KC_LBRC : KC_RBRC);
+//            break;
+        default:
+            // & 0xFF gets the Tap key for Tap Holds, required when using Retro Shift
+            // The IS_RETRO check isn't really necessary here, always using
+            // keycode & 0xFF would be fine.
+            unregister_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+    }
+}
+
 bool get_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
 #    ifndef NO_AUTO_SHIFT_ALPHA
@@ -95,7 +200,7 @@ keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_LAYER0] = LAYOUT(KC_CAPS, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, KC_HOME, KC_END, KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS, KC_EQL, KC_BSPC, KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_LBRC, KC_RBRC, KC_BSLS, KC_PGUP, KC_ESC, KC_A, KC_S, KC_D, KC_F, KC_G, KC_BSPC, KC_H, KC_J, KC_K, KC_L, KC_BSPC, KC_QUOT, KC_ENT, KC_PGDN, KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_ENT, KC_N, KC_M, KC_COMM, KC_DOT, KC_ENT, KC_RSFT, KC_UP, KC_LCTL, KC_LALT, KC_RGUI, MO(1), LCTL_T(KC_F12), KC_LSFT, LT(2,KC_SPC), KC_RGUI, MO(5), KC_RCTL, KC_LEFT, KC_DOWN, KC_RGHT),
 
-[_LAYER1] = LAYOUT(KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TAB, KC_GRV, KC_QUOT, KC_LPRN, KC_RPRN, KC_F16, KC_NO, KC_7, KC_8, KC_9, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ESC, KC_MINS, KC_EQL, KC_LBRC, KC_RBRC, KC_BSLS, KC_BSPC, KC_NO, KC_4, KC_5, KC_6, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LSFT, KC_SCLN, KC_COMM, KC_DOT, KC_SLSH, KC_F17, KC_ENT, KC_NO, KC_1, KC_2, KC_3, KC_TRNS, KC_TRNS, KC_VOLU, KC_LCTL, KC_LALT, KC_LGUI, KC_TRNS, KC_LCTL, KC_RSFT, KC_0, KC_PDOT, KC_TRNS, KC_TRNS, KC_F14, KC_VOLD, KC_F15),
+[_LAYER1] = LAYOUT(KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TAB, KC_GRV, KC_QUOT, LZF_PRN, LZF_ABK, KC_F16, KC_NO, KC_7, KC_8, KC_9, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ESC, KC_MINS, KC_EQL, LZF_CB, LZF_RC, KC_BSLS, KC_BSPC, KC_NO, KC_4, KC_5, KC_6, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LSFT, LZF_QUOTE, KC_COMM, KC_DOT, KC_SLSH, KC_F17, KC_ENT, KC_NO, KC_1, KC_2, KC_3, KC_TRNS, KC_TRNS, KC_VOLU, KC_LCTL, KC_LALT, KC_LGUI, KC_TRNS, KC_LCTL, KC_RSFT, KC_0, KC_PDOT, KC_TRNS, KC_TRNS, KC_F14, KC_VOLD, KC_F15),
 
 [_LAYER2] = LAYOUT(KC_CAPS, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, KC_HOME, KC_END, KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS, KC_EQL, KC_BSPC, KC_TAB, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_PGUP, KC_NO, KC_HOME, KC_NO, KC_LBRC, KC_RBRC, KC_BSLS, KC_PGUP, KC_ESC, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BSPC, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_TRNS, KC_TRNS, KC_ENT, KC_PGDN, KC_LSFT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ENT, KC_NO, KC_PGDN, KC_NO, KC_END, KC_TRNS, KC_RSFT, KC_UP, KC_LCTL, KC_LALT, KC_LGUI, KC_TRNS, KC_LCTL, KC_LSFT, KC_SPC, KC_RGUI, KC_NO, KC_RCTL, KC_LEFT, KC_DOWN, KC_RGHT),
 

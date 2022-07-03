@@ -19,5 +19,5 @@ AUDIO_ENABLE = no           # Audio output
 RGB_MATRIX_ENABLE = yes
 RGB_MATRIX_DRIVER = IS31FL3731
 
-LTO_ENABLE = yes
-AUTO_SHIFT_ENABLE = yes
+LTO_ENABLE = yes    # 压缩
+AUTO_SHIFT_ENABLE = yes   # auto shift
