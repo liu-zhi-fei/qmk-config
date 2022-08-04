@@ -121,7 +121,7 @@ keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TRNS, KC_TRNS  , KC_TRNS, KC_TRNS, KC_TRNS,        KC_TRNS,                        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
         KC_TAB , KC_GRV   , KC_QUOT, LZF_2  , LZF_3  ,        KC_F16 ,                        KC_NO  , KC_7   , KC_8   , KC_9   , KC_NO  , KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
         KC_ESC , KC_MINS  , KC_EQL , LZF_1  , LZF_5  ,        KC_BSLS, KC_BSPC,               KC_NO  , KC_4   , KC_5   , KC_6   , KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-        KC_LSFT, KC_LSFT  , KC_MINS, KC_BSLS, LZF_4  ,        KC_F17 , KC_ENT ,               KC_NO  , KC_1   , KC_2   , KC_3   , KC_TRNS, KC_TRNS, KC_VOLU,
+        KC_LSFT, KC_LSFT  , KC_MINS, LZF_4  , KC_BSLS,        KC_F17 , KC_ENT ,               KC_NO  , KC_1   , KC_2   , KC_3   , KC_TRNS, KC_TRNS, KC_VOLU,
         KC_LCTL, KC_LALT  , KC_LGUI, KC_TRNS, LCTL_T(KC_F12), KC_LSFT, KC_0   , KC_PDOT,      KC_TRNS, KC_TRNS, KC_F14 , KC_VOLD, KC_F15
     ),
 
