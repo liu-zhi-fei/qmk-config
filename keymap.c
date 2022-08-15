@@ -21,40 +21,34 @@ uint8_t shifted;
 // 先判断shifted状态 禁用shift 发送ab 还原当前mod state
 
 enum lzf_key {          // Make sure have the awesome keycode ready
-    // {}
     LZF_1= SAFE_RANGE ,
-    // ()
     LZF_2 ,
-    // <>
     LZF_3 ,
-    // :;
     LZF_4 ,
-    // []
     LZF_5 ,
-    // ./
     LZF_6 ,
-    // ,?
     LZF_7,
     LZF_8,
+    LZF_9,
 };
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LZF_1:
-            l_m(record, "{", "}");
+            l_m(record, "{", "[");
             return false;
         case LZF_2:
-            l_m(record, "(", ")");
+            l_m(record, "(", "<");
             return false;
         case LZF_3:
-            l_m(record, "<", ">");
+            l_m(record, ")", ">");
             return false;
         case LZF_4:
             l_m(record, ":", ";");
             return false;
         case LZF_5:
-            l_m(record, "[", "]");
+            l_m(record, "}", "]");
             return false;
         case LZF_6:
             l_m(record, ".", "/");
@@ -63,9 +57,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             l_m(record, ",", "?");
             return false;
         case LZF_8:
-            if (record->event.pressed){
-                layer_on(1);
-            }
+            l_m(record, "<", "<");
+            return false;
+        case LZF_9:
+            l_m(record, ">", ">");
             return false;
         default:
             return true; // 正常响应其他键码
@@ -121,7 +116,7 @@ keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TRNS, KC_TRNS  , KC_TRNS, KC_TRNS, KC_TRNS,        KC_TRNS,                        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
         KC_TAB , KC_GRV   , KC_QUOT, LZF_2  , LZF_3  ,        KC_F16 ,                        KC_NO  , KC_7   , KC_8   , KC_9   , KC_NO  , KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
         KC_ESC , KC_MINS  , KC_EQL , LZF_1  , LZF_5  ,        KC_BSLS, KC_BSPC,               KC_NO  , KC_4   , KC_5   , KC_6   , KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-        KC_LSFT, KC_LSFT  , KC_MINS, LZF_4  , KC_BSLS,        KC_F17 , KC_ENT ,               KC_NO  , KC_1   , KC_2   , KC_3   , KC_TRNS, KC_TRNS, KC_VOLU,
+        KC_LSFT, LZF_8    , LZF_9  , LZF_4  , KC_BSLS,        KC_F17 , KC_ENT ,               KC_NO  , KC_1   , KC_2   , KC_3   , KC_TRNS, KC_TRNS, KC_VOLU,
         KC_LCTL, KC_LALT  , KC_LGUI, KC_TRNS, LCTL_T(KC_F12), KC_LSFT, KC_0   , KC_PDOT,      KC_TRNS, KC_TRNS, KC_F14 , KC_VOLD, KC_F15
     ),
 
@@ -130,7 +125,7 @@ keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TRNS, KC_TRNS  , KC_TRNS, KC_TRNS, KC_TRNS,        KC_TRNS,                        KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,
         KC_TAB , KC_GRV   , KC_QUOT, LZF_2  , LZF_3  ,        KC_F16 ,                        KC_NO,   KC_PGDN, KC_PGUP, KC_NO,   KC_NO,   KC_LBRC, KC_RBRC, KC_BSLS, KC_PGUP,
         KC_ESC , KC_MINS  , KC_EQL , LZF_1  , LZF_5  ,        KC_BSLS, KC_BSPC,               KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_TRNS, KC_TRNS, KC_ENT,  KC_PGDN,
-        KC_LSFT, KC_LSFT  , KC_MINS, KC_BSLS, LZF_4  ,        KC_F17 , KC_ENT,                KC_NO,   RGUI(KC_END),  RGUI(KC_HOME), KC_NO,   KC_TRNS, KC_RSFT, KC_UP,
+        KC_LSFT, LZF_8    , LZF_9  , LZF_4  , KC_BSLS,        KC_F17 , KC_ENT ,               KC_NO  , KC_1   , KC_2   , KC_3   , KC_TRNS, KC_TRNS, KC_VOLU,
         KC_LCTL, KC_LALT  , KC_LGUI, KC_TRNS, LCTL_T(KC_F12), KC_LSFT, KC_SPC, KC_RGUI,       KC_NO,   KC_RCTL, KC_LEFT, KC_DOWN, KC_RGHT
     ),
 
