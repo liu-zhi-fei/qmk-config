@@ -30,11 +30,30 @@ enum lzf_key {          // Make sure have the awesome keycode ready
     LZF_7,
     LZF_8,
     LZF_9,
-    LZF_10
+    LZF_10,
+    LZF_11
 };
 
 
+#define _LAYER0 0
+#define _LAYER1 1
+#define _LAYER2 2
+#define _LAYER3 3
+#define _LAYER4 4
+#define _LAYER5 5
+
+static uint16_t time_on_pressed;
+static bool other_layer_pressed;
+static bool activity_coustom_layer;
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (record->event.pressed) {
+        if(activity_coustom_layer){
+            other_layer_pressed = true;
+        } else {
+            other_layer_pressed = false;
+        }
+    }
     switch (keycode) {
         case LZF_1:
             l_m(record, "{", "[");
@@ -63,17 +82,40 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case LZF_9:
             l_m(record, ">", ">");
             return false;
+        case LZF_10:
+            if (record->event.pressed) {
+                // 按下
+                layer_on(_LAYER2);
+                activity_coustom_layer =  true;
+                time_on_pressed = record->event.time;
+            } else {
+                layer_off(_LAYER2);
+                activity_coustom_layer =  false;
+                if (TIMER_DIFF_16(record->event.time, time_on_pressed) < TAPPING_TERM && !other_layer_pressed) {
+                    tap_code16(KC_SPC);
+                }
+                time_on_pressed = 0;
+            }
+            return false;
+        case LZF_11:
+            if (record->event.pressed) {
+                // 按下
+                layer_on(_LAYER1);
+                activity_coustom_layer =  true;
+                time_on_pressed = record->event.time;
+            } else {
+                layer_off(_LAYER1);
+                activity_coustom_layer =  false;
+                if (TIMER_DIFF_16(record->event.time, time_on_pressed) < TAPPING_TERM && !other_layer_pressed) {
+                    tap_code16(KC_SPC);
+                }
+                time_on_pressed = 0;
+            }
+            return false;
         default:
             return true; // 正常响应其他键码
     }
 }
-
-#define _LAYER0 0
-#define _LAYER1 1
-#define _LAYER2 2
-#define _LAYER3 3
-#define _LAYER4 4
-#define _LAYER5 5
 
 enum custom_keycodes {
     LAYER0 = SAFE_RANGE,
@@ -107,7 +149,7 @@ keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB    , KC_Q     , KC_W   , KC_E   , KC_R    , KC_T     ,                            KC_Y         , KC_U        , KC_I         , KC_O   ,  KC_P   ,  KC_LBRC , KC_RBRC , KC_BSLS , KC_PGUP,
         KC_ESC    , KC_A     , KC_S   , KC_D   , KC_F    , KC_G     , KC_BSPC,                   KC_H         , KC_J        , KC_K         , KC_L   ,  KC_BSPC,  KC_QUOT , KC_ENT  , KC_PGDN ,
         KC_LSFT   , KC_Z     , KC_X   , KC_C   , KC_V    , KC_B     , KC_ENT,                    KC_N         , KC_M        , LZF_7        , LZF_6  ,  KC_ENT ,  KC_RSFT , KC_UP   ,
-        KC_LCTL   , KC_LALT  , KC_LGUI         , MO(1)              , LCTL_T(KC_F12), KC_LSFT,   KC_SPC                     , MO(2)                 ,  MO(4)  ,  KC_RCTL , KC_LEFT , KC_DOWN , KC_RGHT
+        KC_LCTL   , KC_LALT  , KC_LGUI         , LZF_11             , LCTL_T(KC_F12), KC_LSFT,   LZF_10                     , KC_LGUI               ,  MO(4)  ,  KC_RCTL , KC_LEFT , KC_DOWN , KC_RGHT
     ),
 
 [_LAYER1] = LAYOUT(
@@ -116,7 +158,7 @@ keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB    , KC_GRV   , KC_QUOT, LZF_2  , LZF_3   , KC_F16   ,                            KC_TRNS      , KC_4        , KC_5         , KC_6   ,  KC_NO  ,  KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS,
         KC_ESC    , KC_MINS  , KC_EQL , LZF_1  , LZF_5   , KC_BSLS  , KC_BSPC,                   KC_TRNS      , KC_1        , KC_2         , KC_3   ,  KC_TRNS,  KC_TRNS , KC_TRNS , KC_TRNS ,
         KC_LSFT   , LZF_8    , LZF_9  , LZF_4  , KC_BSLS , KC_F17   , KC_ENT ,                   KC_TRNS      , KC_0        , KC_TRNS      , KC_TRNS,  KC_TRNS,  KC_TRNS , KC_VOLU ,
-        KC_LCTL   , KC_LALT  , KC_LGUI         , KC_TRNS            , LCTL_T(KC_F12), KC_LSFT,   KC_SPC                     , KC_TRNS               ,  KC_TRNS,  KC_TRNS , KC_F14  , KC_VOLD , KC_F15
+        KC_LCTL   , KC_LALT  , KC_LGUI         , KC_TRNS            , LCTL_T(KC_F12), KC_LSFT,   LZF_10                     , KC_TRNS               ,  KC_TRNS,  KC_TRNS , KC_F14  , KC_VOLD , KC_F15
     ),
 
 [_LAYER2] = LAYOUT(
@@ -125,7 +167,7 @@ keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB    , KC_GRV   , KC_QUOT, LZF_2  , LZF_3   , KC_F16   ,                            KC_NO        , KC_PGDN     , KC_PGUP      , KC_NO  ,  KC_NO  ,  KC_LBRC , KC_RBRC , KC_BSLS , KC_PGUP,
         KC_ESC    , KC_MINS  , KC_EQL , LZF_1  , LZF_5   , KC_BSLS  , KC_BSPC,                   KC_LEFT      , KC_DOWN     , KC_UP        , KC_RGHT,  KC_TRNS,  KC_TRNS , KC_ENT  , KC_PGDN ,
         KC_LSFT   , LZF_8    , LZF_9  , LZF_4  , KC_BSLS , KC_F17   , KC_ENT,                    KC_NO        , RGUI(KC_END), RGUI(KC_HOME), KC_NO  ,  KC_TRNS,  KC_RSFT , KC_UP   ,
-        KC_LCTL   , KC_LALT  , KC_LGUI         , KC_TRNS            , LCTL_T(KC_F12), KC_LSFT,   KC_SPC                     , KC_RGUI               ,  KC_NO  ,  KC_RCTL , KC_LEFT , KC_DOWN , KC_RGHT
+        KC_LCTL   , KC_LALT  , KC_LGUI         , KC_TRNS            , LCTL_T(KC_F12), KC_LSFT,   KC_NO                      , KC_RGUI               ,  KC_NO  ,  KC_RCTL , KC_LEFT , KC_DOWN , KC_RGHT
     ),
 
 [_LAYER3] = LAYOUT(
